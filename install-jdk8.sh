@@ -11,8 +11,7 @@ fi
 # Untar
 echo "Extracting"
 tar -xzf "$DOWNLOAD_FILE"
-#rm -f "$DOWNLOAD_FILE"
-
+rm -f "$DOWNLOAD_FILE"
 
 # Move to /opt and create symlink
 echo "Moving $EXTRACTION_DIRECTORY to /opt/java"
