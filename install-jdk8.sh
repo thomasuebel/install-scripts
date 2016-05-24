@@ -1,7 +1,9 @@
 #!/bin/bash
-DOWNLOAD_FILE="jdk-8u40-linux-x64.tar.gz"
-DOWNLOAD_URL="http://download.oracle.com/otn-pub/java/jdk/8u40-b25/$DOWNLOAD_FILE"
-EXTRACTION_DIRECTORY="jdk1.8.0_40"
+DOWNLOAD_FILE="jdk-8u91-linux-x64.tar.gz"
+DOWNLOAD_URL="http://download.oracle.com/otn-pub/java/jdk/8u91-b14/$DOWNLOAD_FILE"
+EXTRACTION_DIRECTORY="jdk1.8.0_91"
+OPT_PATH="/opt/java/"
+
 # Download from Oracle
 if [ ! -f $DOWNLOAD_FILE ]; then
 	echo "Downloading and installing java from $DOWNLOAD_URL"
@@ -14,18 +16,19 @@ tar -xzf "$DOWNLOAD_FILE"
 rm -f "$DOWNLOAD_FILE"
 
 # Move to /opt and create symlink
-echo "Moving $EXTRACTION_DIRECTORY to /opt/java"
-if [ ! -d "/opt/java" ]; then
-	mkdir -p "/opt/java"
+
+echo "Moving $EXTRACTION_DIRECTORY to $OPT_PATH"
+if [ ! -d $OPT_PATH ]; then
+	mkdir -p "$OPT_PATH"
 fi
-cp -rf $EXTRACTION_DIRECTORY /opt/java/
+cp -rf $EXTRACTION_DIRECTORY $OPT_PATH
 rm -rf $EXTRACTION_DIRECTORY
 if [ -h /opt/java/latest ]; then
 	echo "Symbolic link already existing. Resetting."
 	rm -f "/opt/java/latest"
 fi
-echo "Creating symlink /opt/java/latest linking to /opt/java/$EXTRACTION_DIRECTORY"
-ln -s "/opt/java/$EXTRACTION_DIRECTORY" "/opt/java/latest"
+echo "Creating symlink /opt/java/latest linking to $OPT_PATH$EXTRACTION_DIRECTORY"
+ln -s "$OPT_PATH$EXTRACTION_DIRECTORY" "/opt/java/latest"
 
 # Update alternatives
 echo "Updating alternatives..."
