@@ -1,7 +1,7 @@
 #!/bin/bash
-DOWNLOAD_FILE="jdk-8u91-linux-x64.tar.gz"
-DOWNLOAD_URL="http://download.oracle.com/otn-pub/java/jdk/8u91-b14/$DOWNLOAD_FILE"
-EXTRACTION_DIRECTORY="jdk1.8.0_91"
+DOWNLOAD_FILE="jdk-8u171-linux-x64.tar.gz"
+DOWNLOAD_URL="http://download.oracle.com/otn-pub/java/jdk/8u171-b11/512cd62ec5174c3487ac17c61aaa89e8/$DOWNLOAD_FILE"
+EXTRACTION_DIRECTORY="jdk1.8.0_171"
 OPT_PATH="/opt/java/"
 
 # Download from Oracle
