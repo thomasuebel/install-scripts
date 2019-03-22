@@ -1,22 +1,29 @@
 #!/bin/bash
-DOWNLOAD_FILE="jdk-8u171-linux-x64.tar.gz"
-DOWNLOAD_URL="http://download.oracle.com/otn-pub/java/jdk/8u171-b11/512cd62ec5174c3487ac17c61aaa89e8/$DOWNLOAD_FILE"
-EXTRACTION_DIRECTORY="jdk1.8.0_171"
-OPT_PATH="/opt/java/"
+set -u
 
-# Download from Oracle
+if [ "$EUID" -ne 0 ]
+  then echo "Script requires administrative privileges. sudo ./install-openjdk.sh"
+  exit
+fi
+
+DOWNLOAD_FILE="OpenJDK8U-jdk_x64_linux_hotspot_8u202b08.tar.gz"
+DOWNLOAD_URL="https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u202-b08/$DOWNLOAD_FILE"
+OPT_PATH="/opt/java/"
+BASH_RC="/home/$SUDO_USER/.bashrc"
+
+# Download
 if [ ! -f $DOWNLOAD_FILE ]; then
-	echo "Downloading and installing java from $DOWNLOAD_URL"
-	wget --quiet --no-cookies --no-check-certificate --header "Cookie: oraclelicense=accept-securebackup-cookie" "$DOWNLOAD_URL"
+	echo "Downloading and installing $DOWNLOAD_FILE..."
+	wget --quiet --no-cookies --no-check-certificate "$DOWNLOAD_URL"
 fi
 
 # Untar
+EXTRACTION_DIRECTORY="$(tar tfz $DOWNLOAD_FILE | head -1 | cut -d '/' -f1)"
 echo "Extracting"
 tar -xzf "$DOWNLOAD_FILE"
 rm -f "$DOWNLOAD_FILE"
 
 # Move to /opt and create symlink
-
 echo "Moving $EXTRACTION_DIRECTORY to $OPT_PATH"
 if [ ! -d $OPT_PATH ]; then
 	mkdir -p "$OPT_PATH"
@@ -30,22 +37,11 @@ fi
 echo "Creating symlink /opt/java/latest linking to $OPT_PATH$EXTRACTION_DIRECTORY"
 ln -s "$OPT_PATH$EXTRACTION_DIRECTORY" "/opt/java/latest"
 
-# Update alternatives
-echo "Updating alternatives..."
-update-alternatives --install "/usr/bin/java" "java" "/opt/java/latest/bin/java" 1
-update-alternatives --install "/usr/bin/javac" "javac" "/opt/java/latest/bin/javac" 1
-update-alternatives --install "/usr/bin/javaws" "javaws" "/opt/java/latest/bin/javaws" 1
-update-alternatives --install "/usr/bin/jar" "jar" "/opt/java/latest/bin/jar" 1
-update-alternatives --install "/usr/lib/mozilla/plugins/mozilla-javaplugin.so" "mozilla-javaplugin.so" "/opt/java/latest/jre/lib/amd64/libnpjp2.so" 1
-update-alternatives --config java
-update-alternatives --config javac
-update-alternatives --config javaws
-update-alternatives --config jar
-update-alternatives --config mozilla-javaplugin.so
-
 # Finish up
+echo "Adding JAVA_HOME to $BASH_RC etc."
+cat <<EOF >> "$BASH_RC"
+export JAVA_HOME=/opt/java/latest
+export PATH=\$JAVA_HOME/bin:\$PATH
+EOF
+
 echo "finished."
-echo "Dont forget to add JAVA_HOME to your .bashrc etc..."
-echo ">       JAVA_HOME=/opt/java/latest"
-echo ">       export JAVA_HOME"
-echo ""
